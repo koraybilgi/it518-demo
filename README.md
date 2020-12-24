@@ -1,1 +1,2 @@
-# it518-demo
+ssh-keygen -m PEM 
+chmod 600 /vagrant/.keypairs/*

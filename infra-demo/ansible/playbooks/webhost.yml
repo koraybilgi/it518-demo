@@ -1,0 +1,27 @@
+- hosts: webhost
+  gather_facts: false
+  become: yes
+
+  tasks:
+    - name: Install docker for Webhost
+      apt:
+        name: docker.io
+        state: present
+        update_cache: yes
+
+    - name: Clean docker containers
+      args:
+        executable: /bin/bash
+      shell: docker rm -f $(docker ps -a -q)
+      ignore_errors: yes
+
+    - name: Start wordpress docker webhost container
+      args:
+        executable: /bin/bash
+      shell: >
+        docker run \
+        -e WORDPRESS_DB_HOST={{ db_private_ip }} \
+        -e WORDPRESS_DB_USER=root \
+        -e WORDPRESS_DB_PASSWORD=root \
+        -e WORDPRESS_DB_NAME=wordpress \
+        --name wordpress_webhost --network host -d wordpress

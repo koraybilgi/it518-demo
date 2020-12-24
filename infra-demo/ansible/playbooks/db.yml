@@ -1,0 +1,25 @@
+- hosts: db
+  gather_facts: false
+  become: yes
+
+  tasks:
+    - name: Install docker for DB
+      apt:
+        name: docker.io
+        state: present
+        update_cache: yes
+
+    - name: Clean docker containers
+      args:
+        executable: /bin/bash
+      shell: docker rm -f $(docker ps -a -q)
+      ignore_errors: yes
+
+    - name: Start mysql docker container
+      args:
+        executable: /bin/bash
+      shell: >
+        docker run \
+        --env MYSQL_ROOT_PASSWORD=root \
+        --env MYSQL_DATABASE=wordpress \
+        --name wordpress_db --network host -d mysql:5.7
